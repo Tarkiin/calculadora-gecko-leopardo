@@ -22,7 +22,7 @@ EXPLICACIONES = {
 
 def infer_tipo(trait):
     t = trait.lower()
-    if t in ["wild", "normal"]:
+    if t in ["wild", "wild type", "normal"]:
         return "base"
     if "het" in t or "patternless" in t or "albino" in t or "eclipse" in t or "blizzard" in t or "marble" in t or "cipher" in t or "rainwater" in t or "tremper" in t or "bell" in t:
         return "recesivo"
@@ -137,7 +137,7 @@ def cross_dicts(trait_results):
                 tag = f"<span style='background:#dddddd;color:#222;padding:2px 8px;border-radius:8px;margin:2px'>{fenotipo} {trait_name}</span>"
             tags.append(tag)
             prob *= p
-        combosfrozenset(tags)] += prob
+        combos[frozenset(tags)] += prob
     return combos
 
 def calculate_full_cross(padre_genos, madre_genos):
