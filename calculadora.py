@@ -153,4 +153,4 @@ if st.button("Calcular Descendencia") and padre_genos and madre_genos:
         st.markdown(f"**{prob*100:.0f}%** &nbsp; {tags_str}", unsafe_allow_html=True)
     st.caption("Resultados únicos tipo MorphMarket. Puedes afinar las etiquetas, los colores o añadir más lógica específica.")
 
-st.info("¡Calculadora genética con explicaciones y etiquetas, lógica real, diseño tipo MorphMarket y añadido el JSON de traits robado jajajaj!")
+st.info("¡Calculadora genética con explicaciones y etiquetas, lógica real, diseño basico y usa el JSON!")
