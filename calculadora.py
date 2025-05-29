@@ -8,7 +8,7 @@ with open("all_gecko_morphs_combined.json", "r", encoding="utf-8") as f:
     all_traits = sorted(list(set([t for t in json.load(f) if t and t.strip()])))
 
 st.set_page_config(page_title="Calculadora Genética Gecko Leopardo", layout="centered")
-st.title("🦎 Calculadora Genética Mendeliana - Gecko Leopardo")
+st.title("🦎 Calculadora Genética Mendeliana - Gecko Leopardo Version 1.1")
 
 EXPLICACIONES = {
     "Visual": "Expresa este gen o morph físicamente, se ve a simple vista.",
