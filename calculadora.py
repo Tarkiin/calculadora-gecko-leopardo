@@ -1,4 +1,3 @@
-
 import streamlit as st
 import json
 import itertools
@@ -8,7 +7,7 @@ with open("all_gecko_morphs_combined.json", "r", encoding="utf-8") as f:
     all_traits = sorted(list(set([t for t in json.load(f) if t and t.strip()])))
 
 st.set_page_config(page_title="Calculadora Genética Gecko Leopardo", layout="centered")
-st.title("🦎 Calculadora Genética Mendeliana - Gecko Leopardo Version 1.1")
+st.title("🦎 Calculadora Genética Mendeliana - Gecko Leopardo Version 1.2")
 
 EXPLICACIONES = {
     "Visual": "Expresa este gen o morph físicamente, se ve a simple vista.",
@@ -24,7 +23,7 @@ def infer_tipo(trait):
     t = trait.lower()
     if t in ["wild", "wild type", "normal"]:
         return "base"
-    if "het" in t or "patternless" in t or "albino" in t or "eclipse" in t or "blizzard" in t or "marble" in t or "cipher" in t or "rainwater" in t or "tremper" in t or "bell" in t:
+    if "het" in t or "patternless" in t or "albino" in t or "ecl...pher" in t or "rainwater" in t or "tremper" in t or "bell" in t:
         return "recesivo"
     elif "super" in t:
         return "co-dominante"
@@ -81,11 +80,17 @@ def get_alleles(tipo, genotipo):
     return ["R", "r"]
 
 def resultado_trait(trait, tipo, geno_p, geno_m):
+    """Devuelve diccionario {fenotipo: probabilidad} para un trait concreto."""
+    # Caso base: Wild Type siempre al 100 %
+    if tipo == "base":
+        return {"Wild": 1.0}
+
     a1 = get_alleles(tipo, geno_p)
     a2 = get_alleles(tipo, geno_m)
     descendencia = [tuple(sorted([i, j])) for i in a1 for j in a2]
     n = len(descendencia)
     res = defaultdict(float)
+
     if tipo == "recesivo":
         for par in descendencia:
             if par == ("r", "r"):
@@ -94,6 +99,7 @@ def resultado_trait(trait, tipo, geno_p, geno_m):
                 res["Het"] += 1
             else:
                 res["No porta"] += 1
+
     elif tipo == "co-dominante":
         for par in descendencia:
             if par == ("R", "R"):
@@ -102,14 +108,15 @@ def resultado_trait(trait, tipo, geno_p, geno_m):
                 res["Visual"] += 1
             else:
                 res["No porta"] += 1
+
     elif tipo == "dominante":
         for par in descendencia:
             if "R" in par:
                 res["Visual"] += 1
             else:
                 res["No porta"] += 1
-    elif tipo == "base":
-        res["Wild"] = 1.0
+
+    # Normalizar probabilidades
     for k in res:
         res[k] = res[k] / n
     return dict(res)
@@ -160,4 +167,4 @@ if st.button("Calcular Descendencia") and padre_genos and madre_genos:
         st.markdown(f"**{prob*100:.0f}%** &nbsp; {tags_str}", unsafe_allow_html=True)
     st.caption("Calculadora actualizada con lógica real para Wild Type, Het y Visuales.")
 
-st.info("Versión mejorada: lógica genética precisa, herencia recesiva, dominante, co-dominante y base (Wild Type) 🧬")
+st.info("Versión 1.2: lógica genética precisa, herencia recesiva, dominante, co-dominante y base (Wild Type) 🧬")
