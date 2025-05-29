@@ -22,7 +22,7 @@ EXPLICACIONES = {
 
 def infer_tipo(trait):
     t = trait.lower()
-    if t in ["wild", "wild type", "normal"]:
+    if t in ["wild", "normal"]:
         return "base"
     if "het" in t or "patternless" in t or "albino" in t or "eclipse" in t or "blizzard" in t or "marble" in t or "cipher" in t or "rainwater" in t or "tremper" in t or "bell" in t:
         return "recesivo"
