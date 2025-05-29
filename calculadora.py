@@ -1,3 +1,4 @@
+
 import streamlit as st
 import json
 import itertools
@@ -9,7 +10,6 @@ with open("all_gecko_morphs_combined.json", "r", encoding="utf-8") as f:
 st.set_page_config(page_title="Calculadora Genética Gecko Leopardo", layout="centered")
 st.title("🦎 Calculadora Genética Mendeliana - Gecko Leopardo")
 
-# Etiquetas de ayuda para cada genotipo
 EXPLICACIONES = {
     "Visual": "Expresa este gen o morph físicamente, se ve a simple vista.",
     "Het": "No se ve, pero porta el gen recesivo y puede transmitirlo.",
@@ -22,6 +22,8 @@ EXPLICACIONES = {
 
 def infer_tipo(trait):
     t = trait.lower()
+    if t in ["wild", "wild type", "normal"]:
+        return "base"
     if "het" in t or "patternless" in t or "albino" in t or "eclipse" in t or "blizzard" in t or "marble" in t or "cipher" in t or "rainwater" in t or "tremper" in t or "bell" in t:
         return "recesivo"
     elif "super" in t:
@@ -32,7 +34,8 @@ def infer_tipo(trait):
 GENOTIPOS = {
     "recesivo": ["Visual", "Het", "Pos Het", "66% Het", "50% Het", "No porta"],
     "dominante": ["Visual", "No porta"],
-    "co-dominante": ["Super", "Visual", "No porta"]
+    "co-dominante": ["Super", "Visual", "No porta"],
+    "base": ["Visual"]
 }
 
 traits_padre = st.multiselect("Traits del Padre", options=all_traits, key="padre")
@@ -60,7 +63,6 @@ else:
     padre_genos = {}
     madre_genos = {}
 
-# Traducción a alelos Mendelianos
 def get_alleles(tipo, genotipo):
     if tipo == "recesivo":
         if genotipo == "Visual": return ["r", "r"]
@@ -74,6 +76,8 @@ def get_alleles(tipo, genotipo):
         if genotipo == "Super": return ["R", "R"]
         if genotipo == "Visual": return ["R", "r"]
         if genotipo == "No porta": return ["r", "r"]
+    if tipo == "base":
+        return ["R", "R"]
     return ["R", "r"]
 
 def resultado_trait(trait, tipo, geno_p, geno_m):
@@ -90,7 +94,6 @@ def resultado_trait(trait, tipo, geno_p, geno_m):
                 res["Het"] += 1
             else:
                 res["No porta"] += 1
-        for k in res: res[k] = res[k] / n
     elif tipo == "co-dominante":
         for par in descendencia:
             if par == ("R", "R"):
@@ -99,14 +102,16 @@ def resultado_trait(trait, tipo, geno_p, geno_m):
                 res["Visual"] += 1
             else:
                 res["No porta"] += 1
-        for k in res: res[k] = res[k] / n
     elif tipo == "dominante":
         for par in descendencia:
             if "R" in par:
                 res["Visual"] += 1
             else:
                 res["No porta"] += 1
-        for k in res: res[k] = res[k] / n
+    elif tipo == "base":
+        res["Wild"] = 1.0
+    for k in res:
+        res[k] = res[k] / n
     return dict(res)
 
 def cross_dicts(trait_results):
@@ -117,17 +122,19 @@ def cross_dicts(trait_results):
         tags = []
         prob = 1.0
         for i, (fenotipo, p) in enumerate(prod):
-            # Etiqueta y color para cada fenotipo
+            trait_name = keys[i]
             if fenotipo == "Visual":
-                tag = f"<span style='background:#fa5757;color:white;padding:2px 8px;border-radius:8px;margin:2px'>Visual {keys[i]}</span>"
+                tag = f"<span style='background:#fa5757;color:white;padding:2px 8px;border-radius:8px;margin:2px'>Visual {trait_name}</span>"
             elif fenotipo == "Het":
-                tag = f"<span style='background:#faaf45;color:white;padding:2px 8px;border-radius:8px;margin:2px'>Het {keys[i]}</span>"
+                tag = f"<span style='background:#faaf45;color:white;padding:2px 8px;border-radius:8px;margin:2px'>Het {trait_name}</span>"
             elif fenotipo == "Super":
-                tag = f"<span style='background:#7dd957;color:white;padding:2px 8px;border-radius:8px;margin:2px'>Super {keys[i]}</span>"
+                tag = f"<span style='background:#7dd957;color:white;padding:2px 8px;border-radius:8px;margin:2px'>Super {trait_name}</span>"
             elif fenotipo == "No porta":
-                tag = f"<span style='background:#bbbbbb;color:#222;padding:2px 8px;border-radius:8px;margin:2px'>Pos {keys[i]}</span>"
+                tag = f"<span style='background:#bbbbbb;color:#222;padding:2px 8px;border-radius:8px;margin:2px'>Visual Wild (no porta {trait_name})</span>"
+            elif fenotipo == "Wild":
+                tag = f"<span style='background:#9ec3ff;color:#222;padding:2px 8px;border-radius:8px;margin:2px'>Wild Type</span>"
             else:
-                tag = f"<span style='background:#bbbbbb;color:#222;padding:2px 8px;border-radius:8px;margin:2px'>{fenotipo} {keys[i]}</span>"
+                tag = f"<span style='background:#dddddd;color:#222;padding:2px 8px;border-radius:8px;margin:2px'>{fenotipo} {trait_name}</span>"
             tags.append(tag)
             prob *= p
         combos[tuple(sorted(tags))] += prob
@@ -151,6 +158,6 @@ if st.button("Calcular Descendencia") and padre_genos and madre_genos:
     for tags, prob in resultados:
         tags_str = " ".join(list(tags))
         st.markdown(f"**{prob*100:.0f}%** &nbsp; {tags_str}", unsafe_allow_html=True)
-    st.caption("Resultados únicos tipo MorphMarket. Puedes afinar las etiquetas, los colores o añadir más lógica específica.")
+    st.caption("Calculadora actualizada con lógica real para Wild Type, Het y Visuales.")
 
-st.info("¡Calculadora genética con explicaciones y etiquetas, lógica real, diseño basico y usa el JSON!")
+st.info("Versión mejorada: lógica genética precisa, herencia recesiva, dominante, co-dominante y base (Wild Type) 🧬")
