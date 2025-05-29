@@ -137,7 +137,7 @@ def cross_dicts(trait_results):
                 tag = f"<span style='background:#dddddd;color:#222;padding:2px 8px;border-radius:8px;margin:2px'>{fenotipo} {trait_name}</span>"
             tags.append(tag)
             prob *= p
-        combos[tuple(sorted(tags))] += prob
+        combosfrozenset(tags)] += prob
     return combos
 
 def calculate_full_cross(padre_genos, madre_genos):
